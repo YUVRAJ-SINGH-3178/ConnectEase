@@ -1,0 +1,73 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-background text-text-primary font-inter;
+}
+
+/* App-wide dark overrides: reduce white-dominant surfaces */
+.rounded-2xl {
+  background-color: rgba(255, 255, 255, 0.02) !important;
+}
+.bg-white {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  color: #e6eef8 !important;
+}
+/* Inputs, cards and surface elements */
+input,
+textarea,
+.card,
+.bg-surface {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  color: #e6eef8 !important;
+}
+
+/* Ensure the background utility is solidly dark for surface panels */
+.bg-background {
+  background-color: #0b0c0f !important;
+  color: #e6eef8 !important;
+}
+.search-input,
+input[type="search"] {
+  background-color: rgba(255, 255, 255, 0.04) !important;
+  color: #e6eef8 !important;
+}
+
+/* Make borders lighter but visible on dark backgrounds */
+.border,
+.border-border {
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Ensure cards and stat boxes maintain contrast */
+.card,
+.stat-card,
+.p-4,
+.p-6 {
+  background-clip: padding-box;
+}
+
+/* Force darker backgrounds for card action areas and buttons that were showing white */
+.card .bg-background,
+.card .p-4.bg-background,
+.card .p-6.bg-background {
+  background-color: rgba(10, 11, 12, 0.06) !important;
+  color: #e6eef8 !important;
+}
+
+/* Default buttons: make them dark unless they use explicit accent classes */
+button {
+  background-color: rgba(255, 255, 255, 0.03) !important;
+  color: #e6eef8 !important;
+  border-color: rgba(255, 255, 255, 0.06) !important;
+}
+
+/* Preserve accent buttons: let Tailwind utility classes decide their styles */
+
+/* Increase chat bubble width so messages don't collapse */
+.max-w-xs {
+  max-width: 520px !important;
+}

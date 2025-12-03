@@ -1,0 +1,31 @@
+.prism-container {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none; /* so the background doesn't block clicks */
+  z-index: 0;
+}
+
+/* If you want the visual content to sit behind the UI, ensure the parent has relative/stacking context and UI content has higher z-index */
+
+/* Darker / moodier tone for the prism - apply filters to the canvas */
+.prism-container canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  /* Lower brightness and saturation for a darker tone */
+  filter: brightness(0.45) contrast(1.05) saturate(0.7) hue-rotate(0deg);
+  opacity: 0.98;
+}
+
+/* Add a subtle dark overlay to deepen the background without blocking interactions */
+.prism-container::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.45));
+  pointer-events: none;
+  z-index: 1;
+}
