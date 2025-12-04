@@ -243,7 +243,7 @@ const createLiquidEffect = (
     }
     `;
   return new Effect("LiquidEffect", fragment, {
-    uniforms: new Map([
+    uniforms: new Map<string, THREE.Uniform>([
       ["uTexture", new THREE.Uniform(texture)],
       ["uStrength", new THREE.Uniform(opts?.strength ?? 0.025)],
       ["uTime", new THREE.Uniform(0)],
@@ -718,6 +718,7 @@ const PixelBlast = ({
       };
     } else {
       const t = threeRef.current;
+      if (!t) return;
       t.uniforms.uShapeType.value = SHAPE_MAP[variant] ?? 0;
       t.uniforms.uPixelSize.value = pixelSize * t.renderer.getPixelRatio();
       t.uniforms.uColor.value.set(color);

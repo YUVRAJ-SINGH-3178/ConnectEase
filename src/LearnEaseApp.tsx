@@ -39,7 +39,6 @@ import {
   Bell,
   Coins,
   Clock,
-  Clock3,
   ArrowLeft,
   ArrowRight,
   ArrowUpCircle,
@@ -76,7 +75,6 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { format, formatDistanceToNow, isFuture, parseISO } from "date-fns";
 import Prism from "./Prism";
-import PixelBlast from "./PixelBlast";
 
 type AvailabilityMap = Record<string, string[]>;
 
@@ -469,7 +467,7 @@ class MockDB {
       const currentCollection = nextDb[collectionKey] || {};
       let collectionChanged = false;
 
-      // @ts-expect-error - Dynamic access
+      // Dynamic access
       Object.values(seedCollection).forEach((item: unknown) => {
         // @ts-expect-error - Dynamic access
         if (!currentCollection[item.id]) {
@@ -778,6 +776,7 @@ const SEED_DATA: MockDatabase = {
       hoursTeaught: 12,
       hoursLearned: 8,
       joinedDate: "2024-03-10",
+      role: "student",
     },
     "user-3": {
       userId: "user-3",
@@ -799,6 +798,7 @@ const SEED_DATA: MockDatabase = {
       hoursTeaught: 15,
       hoursLearned: 4,
       joinedDate: "2024-01-22",
+      role: "student",
     },
     "user-4": {
       userId: "user-4",
@@ -825,6 +825,7 @@ const SEED_DATA: MockDatabase = {
       hoursTeaught: 6,
       hoursLearned: 9,
       joinedDate: "2024-04-05",
+      role: "student",
     },
     "user-5": {
       userId: "user-5",
@@ -846,6 +847,7 @@ const SEED_DATA: MockDatabase = {
       hoursTeaught: 14,
       hoursLearned: 3,
       joinedDate: "2024-02-28",
+      role: "student",
     },
     "user-6": {
       userId: "user-6",
@@ -1384,7 +1386,7 @@ const SEED_DATA: MockDatabase = {
       {
         id: "notif-4",
         timestamp: "2024-10-19T11:01:00Z",
-        text: "You earned 60 Skill Coins for teaching React!",
+        text: "You earned 60 Skill Points for teaching React!",
         read: true,
       },
     ],
@@ -1410,7 +1412,7 @@ const SEED_DATA: MockDatabase = {
       {
         id: "notif-8",
         timestamp: "2024-10-19T11:01:00Z",
-        text: "You earned 60 Skill Coins for teaching Figma!",
+        text: "You earned 60 Skill Points for teaching Figma!",
         read: true,
       },
     ],
@@ -2341,7 +2343,7 @@ const mockApi = {
       if (!studentProfileCheck) throw new Error("Student profile not found");
       if ((studentProfileCheck.coins || 0) < 10) {
         throw new Error(
-          "Insufficient Skill Coins to schedule a session (need at least 10)."
+          "Insufficient Skill Points to schedule a session (need at least 10)."
         );
       }
 
@@ -4350,7 +4352,7 @@ const Header = () => {
               </p>
               <div className="flex items-center justify-end gap-1 mt-1 text-xs text-accent font-medium">
                 <Coins size={10} />
-                <span>{user && user.coins ? user.coins : 0} Coins</span>
+                <span>{user && user.coins ? user.coins : 0} Points</span>
               </div>
             </div>
             <div className="relative">
@@ -4606,7 +4608,7 @@ const DashboardPage = () => {
                           {club.category}
                         </span>
                         <div className="flex -space-x-2">
-                          {club.members.slice(0, 3).map((m, i) => (
+                          {club.members.slice(0, 3).map((_m, i) => (
                             <div
                               key={i}
                               className="w-6 h-6 rounded-full bg-white/10 border border-[#0B0C0F]"
@@ -4824,7 +4826,7 @@ const DashboardPage = () => {
 };
 
 // Modal for AI introduction drafting
-const IntroductionModal: React.FC<{
+export const IntroductionModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
   myProfile: ProfileData;
@@ -4927,7 +4929,7 @@ const IntroductionModal: React.FC<{
   );
 };
 
-const MatchPage = () => null;
+export const MatchPage = () => null;
 
 const ChatPage = () => {
   const user = useAuthStore((s) => s.user);
@@ -4935,7 +4937,7 @@ const ChatPage = () => {
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [activeConvoId, setActiveConvoId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { params, setPage } = usePage();
+  const { params } = usePage();
   const [viewFilter, setViewFilter] = useState<"all" | "unread">("all");
 
   useEffect(() => {
@@ -6232,7 +6234,7 @@ const ProfilePage = () => {
 };
 
 // Payment Gateway Modal Component
-const PaymentModal = ({
+export const PaymentModal = ({
   isOpen,
   onClose,
   planName,
@@ -6445,13 +6447,10 @@ const PaymentModal = ({
   );
 };
 
-const UpgradePlanModal = ({
-  isOpen,
-  onClose,
-}: {
+export const UpgradePlanModal: React.FC<{
   isOpen: boolean;
   onClose: () => void;
-}) => null;
+}> = () => null;
 
 const SettingsPage = () => {
   const { add } = useToast();
@@ -6504,7 +6503,7 @@ const SettingsPage = () => {
       });
       updateUser(updatedUser);
       add({ title: "Profile Saved", status: "success" });
-    } catch (error) {
+    } catch {
       add({ title: "Failed to save profile", status: "error" });
     } finally {
       setIsSaving(false);
@@ -6526,7 +6525,7 @@ const SettingsPage = () => {
       });
       updateUser(updatedUser);
       add({ title: "Preferences Updated", status: "success" });
-    } catch (error) {
+    } catch {
       // Revert on failure
       setNotifications(notifications);
       add({ title: "Failed to update preferences", status: "error" });
@@ -7390,7 +7389,7 @@ const ScheduleModal: React.FC<{
   );
 };
 
-const SkillSwapModal = ({
+export const SkillSwapModal = ({
   isOpen,
   match,
   myProfile,
@@ -7547,7 +7546,7 @@ const SkillSwapModal = ({
   );
 };
 
-const DoubtConnectModal = ({
+export const DoubtConnectModal = ({
   isOpen,
   onClose,
   studentProfile,
@@ -7672,7 +7671,7 @@ const DoubtConnectModal = ({
     </Modal>
   );
 };
-const MatchCard = ({
+export const MatchCard = ({
   match,
   onDraftIntro,
   onContact,
@@ -7986,12 +7985,12 @@ const ActiveChat = ({
 
   if (!currentUser || !convo.otherUser) return null;
   const otherUser = convo.otherUser;
-  const lastReplyTime = convo.lastMessageTimestamp
-    ? formatDistanceToNow(parseISO(convo.lastMessageTimestamp), {
-        addSuffix: true,
-      })
-    : "just now";
-  const totalExchanges = messages.length;
+  // const lastReplyTime = convo.lastMessageTimestamp
+  //   ? formatDistanceToNow(parseISO(convo.lastMessageTimestamp), {
+  //       addSuffix: true,
+  //     })
+  //   : "just now";
+  // const totalExchanges = messages.length;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -9514,7 +9513,7 @@ const ProjectsPage = () => {
                       <div className="flex -space-x-2">
                         {project.applicants.length > 0 ? (
                           <>
-                            {project.applicants.slice(0, 3).map((app, i) => (
+                            {project.applicants.slice(0, 3).map((_app, i) => (
                               <div
                                 key={i}
                                 className="h-8 w-8 rounded-full bg-surface border-2 border-[#0B0C0F] flex items-center justify-center text-[10px] text-gray-400 ring-1 ring-white/10"
@@ -9966,7 +9965,7 @@ const QAPage = () => {
                     {q.answers.length > 0 && (
                       <div className="flex items-center gap-2">
                         <div className="flex -space-x-2">
-                          {q.answers.slice(0, 3).map((ans, i) => (
+                          {q.answers.slice(0, 3).map((_ans, i) => (
                             <div
                               key={i}
                               className="h-6 w-6 rounded-full bg-surface border border-[#0B0C0F] flex items-center justify-center"
@@ -10584,7 +10583,7 @@ const LeaderboardPage = () => {
 
               // Skip top 3 in the list if you want, or keep them.
               // Keeping them for completeness but styling them differently.
-              const isTop3 = rank <= 3;
+              // const isTop3 = rank <= 3;
 
               return (
                 <motion.div
@@ -10846,11 +10845,14 @@ const HomeSection = () => {
   };
 
   const TrendingWidget = () => (
-    <div className="bg-surface border border-white/10 rounded-2xl p-5 space-y-4">
-      <h3 className="font-bold text-white flex items-center gap-2">
-        <Sparkles size={16} className="text-accent" /> Trending Clubs
+    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 space-y-6 shadow-xl hover:border-accent/20 transition-colors">
+      <h3 className="font-bold text-white flex items-center gap-3 text-lg">
+        <div className="p-2 rounded-lg bg-accent/10 text-accent">
+          <Sparkles size={18} />
+        </div>
+        Trending Clubs
       </h3>
-      <div className="space-y-3">
+      <div className="space-y-4">
         {[
           { name: "AI Enthusiasts", members: 1240, color: "bg-blue-500" },
           { name: "Web3 Builders", members: 850, color: "bg-purple-500" },
@@ -10858,22 +10860,22 @@ const HomeSection = () => {
         ].map((club, i) => (
           <div
             key={i}
-            className="flex items-center gap-3 group cursor-pointer hover:bg-white/5 p-2 rounded-xl transition-colors"
+            className="flex items-center gap-4 group cursor-pointer hover:bg-white/5 p-3 rounded-2xl transition-all duration-300 border border-transparent hover:border-white/5"
           >
             <div
-              className={`w-10 h-10 rounded-xl ${club.color}/20 flex items-center justify-center text-white font-bold`}
+              className={`w-12 h-12 rounded-2xl ${club.color}/20 flex items-center justify-center text-white font-bold text-lg shadow-inner`}
             >
               {club.name[0]}
             </div>
             <div className="flex-1">
-              <div className="text-sm font-medium text-white group-hover:text-accent transition-colors">
+              <div className="font-semibold text-white group-hover:text-accent transition-colors">
                 {club.name}
               </div>
-              <div className="text-xs text-gray-500">
-                {club.members} members
+              <div className="text-xs text-gray-400 font-medium">
+                {club.members.toLocaleString()} members
               </div>
             </div>
-            <button className="text-xs bg-white/10 hover:bg-white/20 text-white px-3 py-1.5 rounded-lg transition-colors">
+            <button className="text-xs font-bold bg-white/10 hover:bg-accent hover:text-black text-white px-4 py-2 rounded-xl transition-all duration-300">
               Join
             </button>
           </div>
@@ -10883,29 +10885,36 @@ const HomeSection = () => {
   );
 
   const EventsWidget = () => (
-    <div className="bg-surface border border-white/10 rounded-2xl p-5 space-y-4">
-      <h3 className="font-bold text-white flex items-center gap-2">
-        <Calendar size={16} className="text-accent" /> Upcoming Events
+    <div className="bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 space-y-6 shadow-xl hover:border-accent/20 transition-colors">
+      <h3 className="font-bold text-white flex items-center gap-3 text-lg">
+        <div className="p-2 rounded-lg bg-accent/10 text-accent">
+          <Calendar size={18} />
+        </div>
+        Upcoming Events
       </h3>
-      <div className="space-y-3">
+      <div className="space-y-4">
         {[
           { title: "Hackathon 2024", date: "Tomorrow, 10:00 AM", type: "Tech" },
           { title: "Design Workshop", date: "Sat, 2:00 PM", type: "Creative" },
         ].map((event, i) => (
           <div
             key={i}
-            className="flex items-start gap-3 p-2 hover:bg-white/5 rounded-xl transition-colors cursor-pointer"
+            className="flex items-start gap-4 p-3 hover:bg-white/5 rounded-2xl transition-all duration-300 cursor-pointer border border-transparent hover:border-white/5"
           >
-            <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex flex-col items-center justify-center text-xs font-bold text-gray-400">
-              <span>DEC</span>
-              <span className="text-white text-sm">{12 + i}</span>
+            <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 flex flex-col items-center justify-center shadow-inner">
+              <span className="text-[10px] font-bold text-accent uppercase tracking-wider">
+                DEC
+              </span>
+              <span className="text-white text-xl font-bold">{12 + i}</span>
             </div>
             <div>
-              <div className="text-sm font-medium text-white line-clamp-1">
+              <div className="font-semibold text-white line-clamp-1 group-hover:text-accent transition-colors">
                 {event.title}
               </div>
-              <div className="text-xs text-gray-500 mt-0.5">{event.date}</div>
-              <div className="text-[10px] text-accent mt-1 bg-accent/10 inline-block px-2 py-0.5 rounded-full">
+              <div className="text-xs text-gray-400 mt-1 font-medium">
+                {event.date}
+              </div>
+              <div className="text-[10px] font-bold text-accent mt-2 bg-accent/10 inline-block px-2.5 py-1 rounded-lg border border-accent/20">
                 {event.type}
               </div>
             </div>
@@ -10916,64 +10925,113 @@ const HomeSection = () => {
   );
 
   return (
-    <div className="space-y-6 max-w-[1600px] mx-auto">
-      <div className="flex items-center justify-between px-4 pt-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Home</h1>
-          <p className="text-gray-400 text-sm mt-1">
-            Welcome back, {user?.name || "Student"}!
-          </p>
-        </div>
-        <div className="hidden sm:flex items-center gap-3">
-          <div className="bg-surface border border-white/10 rounded-full px-4 py-2 flex items-center gap-2 text-sm text-gray-400">
-            <Search size={14} />
-            <span>Search...</span>
+    <div className="space-y-8 max-w-[1600px] mx-auto pb-12">
+      {/* Hero Section */}
+      <div className="relative mx-4 mt-6 overflow-hidden rounded-[2.5rem] bg-[#0A0C14] border border-white/10 shadow-2xl">
+        <div className="absolute inset-0 bg-gradient-to-r from-accent/10 via-purple-500/5 to-blue-500/10 opacity-50" />
+        <div className="absolute top-0 right-0 -mt-20 -mr-20 w-96 h-96 bg-accent/20 blur-[120px] rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 left-0 -mb-20 -ml-20 w-80 h-80 bg-purple-500/20 blur-[100px] rounded-full pointer-events-none" />
+
+        <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="space-y-4 max-w-2xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/5 border border-white/10 text-xs font-medium text-accent backdrop-blur-md">
+              <Sparkles size={12} />
+              <span>Welcome back to LearnEase</span>
+            </div>
+            <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight leading-tight">
+              Hello,{" "}
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-accent to-purple-400">
+                {user?.name || "Student"}
+              </span>
+            </h1>
+            <p className="text-lg text-gray-400 max-w-xl leading-relaxed">
+              Your learning journey continues here. Connect with peers, join
+              clubs, and discover new projects today.
+            </p>
+            <div className="flex items-center gap-4 pt-2">
+              <button className="px-6 py-3 bg-accent text-black font-bold rounded-xl hover:bg-accent/90 transition-all shadow-lg shadow-accent/20 hover:shadow-accent/30 hover:-translate-y-0.5">
+                Explore Feed
+              </button>
+              <button className="px-6 py-3 bg-white/5 text-white font-bold rounded-xl hover:bg-white/10 border border-white/10 transition-all hover:-translate-y-0.5">
+                View Profile
+              </button>
+            </div>
           </div>
-          <button className="w-10 h-10 rounded-full bg-surface border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 transition-colors">
-            <Bell size={18} />
-          </button>
+
+          <div className="hidden md:block relative">
+            <div className="w-64 h-64 rounded-full bg-gradient-to-tr from-accent/20 to-purple-500/20 backdrop-blur-3xl border border-white/10 flex items-center justify-center relative animate-float">
+              <div
+                className="absolute inset-0 rounded-full border border-white/5 animate-spin-slow"
+                style={{ animationDuration: "20s" }}
+              />
+              <div className="text-center space-y-1">
+                <div className="text-4xl font-bold text-white">
+                  {user?.coins || 0}
+                </div>
+                <div className="text-sm text-accent font-bold uppercase tracking-wider">
+                  Points Earned
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Tabs */}
-      <div className="flex gap-8 border-b border-border mb-6 px-4 sticky top-0 bg-[#03050A]/95 backdrop-blur-xl z-20 pt-2">
-        {["feed", "clubs", "events", "projects"].map((tab) => (
-          <button
-            key={tab}
-            onClick={() => setActiveTab(tab as any)}
-            className={`pb-4 text-sm font-medium capitalize transition-all relative ${
-              activeTab === tab
-                ? "text-accent"
-                : "text-text-muted hover:text-text-primary"
-            }`}
-          >
-            {tab}
-            {activeTab === tab && (
-              <motion.div
-                layoutId="activeHomeTab"
-                className="absolute bottom-0 left-0 right-0 h-0.5 bg-accent rounded-full"
+      {/* Navigation & Search Bar */}
+      <div className="px-4 sticky top-4 z-30">
+        <div className="bg-[#0A0C14]/80 backdrop-blur-xl border border-white/10 rounded-2xl p-2 flex flex-col md:flex-row items-center justify-between gap-4 shadow-xl">
+          <div className="flex items-center gap-1 bg-white/5 rounded-xl p-1 w-full md:w-auto overflow-x-auto">
+            {["feed", "clubs", "events", "projects"].map((tab) => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab as any)}
+                className={`px-6 py-2.5 rounded-lg text-sm font-bold capitalize transition-all duration-300 whitespace-nowrap ${
+                  activeTab === tab
+                    ? "bg-accent text-black shadow-lg shadow-accent/20"
+                    : "text-gray-400 hover:text-white hover:bg-white/5"
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3 w-full md:w-auto">
+            <div className="relative flex-1 md:w-64 group">
+              <Search
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-accent transition-colors"
+                size={16}
               />
-            )}
-          </button>
-        ))}
+              <input
+                type="text"
+                placeholder="Search anything..."
+                className="w-full bg-black/20 border border-white/10 rounded-xl py-2.5 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-accent/50 focus:bg-black/40 transition-all"
+              />
+            </div>
+            <button className="w-10 h-10 rounded-xl bg-black/20 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/5 hover:border-white/20 transition-all relative">
+              <Bell size={18} />
+              <span className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full border border-[#0A0C14]" />
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="min-h-[60vh] px-4">
         {activeTab === "feed" && (
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-500">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in fade-in duration-500 slide-in-from-bottom-4">
             {/* Main Feed Column */}
-            <div className="lg:col-span-8 space-y-6">
+            <div className="lg:col-span-8 space-y-8">
               <ActionComposer
                 value={postContent}
                 onChange={setPostContent}
                 onSubmit={handleCreatePost}
-                placeholder="What's on your mind?"
+                placeholder="Share your learning journey..."
                 isSubmitting={isPosting}
-                ctaLabel="Post"
+                ctaLabel="Post Update"
                 avatar={{ src: user?.avatarUrl, name: user?.name }}
               />
 
-              <div className="space-y-4">
+              <div className="space-y-6">
                 {feedPosts.map((post) => (
                   <PostCard key={post.id} post={post} />
                 ))}
@@ -10981,7 +11039,7 @@ const HomeSection = () => {
             </div>
 
             {/* Right Sidebar Widgets */}
-            <div className="hidden lg:block lg:col-span-4 space-y-6">
+            <div className="hidden lg:block lg:col-span-4 space-y-8 sticky top-24 h-fit">
               <TrendingWidget />
               <EventsWidget />
             </div>
@@ -10989,19 +11047,19 @@ const HomeSection = () => {
         )}
 
         {activeTab === "clubs" && (
-          <div className="animate-in fade-in duration-500">
+          <div className="animate-in fade-in duration-500 slide-in-from-bottom-4">
             <ClubsPage />
           </div>
         )}
 
         {activeTab === "events" && (
-          <div className="animate-in fade-in duration-500">
+          <div className="animate-in fade-in duration-500 slide-in-from-bottom-4">
             <EventsPage />
           </div>
         )}
 
         {activeTab === "projects" && (
-          <div className="animate-in fade-in duration-500">
+          <div className="animate-in fade-in duration-500 slide-in-from-bottom-4">
             <ProjectsPage />
           </div>
         )}
