@@ -1,4 +1,4 @@
-# 🎓 LearnEase - Skill Swapping Platform
+# 🎓 ConnectEase - University OS 
 
 A modern web application for skill sharing and peer-to-peer learning, powered by React, TypeScript, and Supabase.
 
